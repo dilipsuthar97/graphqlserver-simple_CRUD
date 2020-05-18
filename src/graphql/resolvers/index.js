@@ -1,6 +1,9 @@
+import GraphQLDate from 'graphql-date';
+
 import PostResolver from './post-resolver';
 
 export default {
+	Date: GraphQLDate,
 	Query: {
 		getPosts: PostResolver.getPosts,
 	},

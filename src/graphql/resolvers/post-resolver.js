@@ -1,55 +1,38 @@
-let i = 0;
-let posts = [...Array(20).keys()].map((_, index) => {
-	i = index;
-	return {
-		_id: index,
-		title: `Title ${index + 1}`,
-		description: `Description ${index + 1}`,
-	};
-});
+import Post from '../../models/Post';
 
 export default {
-	getPosts: () => posts,
-	createPost: (_, args) => {
-		const post = {
-			_id: ++i,
-			...args,
-		};
-		posts.push(post);
+	getPosts: async () => {
+		const posts = await Post.find({}).sort({ createdAt: -1 });
+		return posts;
+	},
+
+	createPost: async (_, args) => {
+		const post = await Post.create({ ...args });
 		return post;
 	},
-	updatePost: (_, { _id, ...rest }) => {
-		const post = posts.find((p) => p._id == _id);
+
+	updatePost: async (_, { _id, ...rest }) => {
+		const post = await Post.findOne({ _id });
 
 		if (!post) {
 			throw new Error('Not found!');
 		}
 
-		Object.entries(rest).forEach(([key, value], index) => {
+		Object.entries(rest).forEach(([key, value], i) => {
 			post[key] = value;
 		});
 
-		posts = posts.map((p, i) => {
-			if (p._id === _id) {
-				return post;
-			} else {
-				return p;
-			}
-		});
-
-		return post;
+		return post.save();
 	},
-	deletePost: (_, { _id }) => {
-		console.log(_id);
-		const post = posts.find((p) => p._id == _id);
+
+	deletePost: async (_, { _id }) => {
+		const post = await Post.findOne({ _id });
 
 		if (!post) {
 			throw new Error('Not found!');
 		}
 
-		console.log(post);
-
-		posts.splice(posts.indexOf({ _id }), 1);
+		post.remove();
 
 		return {
 			message: 'Post deleted!',

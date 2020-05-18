@@ -3,6 +3,7 @@ import express from 'express';
 import http from 'http';
 import { ApolloServer } from 'apollo-server-express';
 
+import './config/db';
 import schema from './graphql/schema';
 import resolvers from './graphql/resolvers';
 import constants from './config/constants';
